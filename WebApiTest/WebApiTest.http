@@ -1,0 +1,45 @@
+@WebApiTest_HostAddress = http://localhost:5161
+
+GET {{WebApiTest_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
+
+
+GET {{WebApiTest_HostAddress}}/api/categories
+Accept: application/json
+
+###
+
+GET {{WebApiTest_HostAddress}}/api/categories?searchValue=apple
+Accept: application/json
+
+###
+
+POST {{WebApiTest_HostAddress}}/api/categories
+Content-Type: application/json
+
+{  
+        "name" : "Apple",
+        "description" : "Any kind of phone"
+}
+
+###
+
+PUT {{WebApiTest_HostAddress}}/api/categories/7292013b-7a53-4b7b-b248-d2ebfd40aaa9
+Content-type: application/json
+
+{
+  "name" : "Vivo",
+  "description" : "very gooood"
+}
+
+
+###
+
+DELETE {{WebApiTest_HostAddress}}/api/categories/28b9acff-22b2-4ee3-8615-b3e710a1ce3c
+Content-type: application/json
+
+{
+  "categoryId": "alpha"
+}
