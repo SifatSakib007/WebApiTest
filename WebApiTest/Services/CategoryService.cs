@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WebApiTest.Controllers;
 using WebApiTest.Data;
 using WebApiTest.DTOs;
 using WebApiTest.Interfaces;
@@ -21,10 +22,26 @@ namespace WebApiTest.Services
         }
 
         //Get all categories
-        public async Task<List<GetCategoriesDTO>?> GetAllCategories()
+        public async Task<PaginatedResult<GetCategoriesDTO?>> GetAllCategories(int pageNumber, int pageSize)
         {
-            var categories = await _context.categories.ToListAsync();
-            return _mapper.Map<List<GetCategoriesDTO>>(categories);
+            IQueryable<Category> query = _context.categories;
+            //get total count
+            var totalCount = await query.CountAsync();
+
+            //pagination, pageNumber = 3, pagesize = 5
+            //20 categories
+            //Skip((pageNumber-1)*pageSize).Take(pageSize)
+            var items = await query.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+            
+            var results = _mapper.Map<List<GetCategoriesDTO?>>(items);
+
+            return new PaginatedResult<GetCategoriesDTO?>
+            {
+                Items = results,
+                TotalCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
         }
 
         //Create categrories
@@ -44,7 +61,7 @@ namespace WebApiTest.Services
         // Update categories
         public async Task<GetCategoriesDTO?> UpdateCategories(Guid categoryId, [FromBody] Category categoryData)
         {
-            var foundCategory = await _context.categories.FirstOrDefaultAsync(category => category.CategoryId == categoryId);
+            var foundCategory = await _context.categories.FindAsync(categoryId);
             if (foundCategory == null)
             {
                 return null;
@@ -60,7 +77,7 @@ namespace WebApiTest.Services
         // Delete categories
         public async Task<bool> DeleteCategories(Guid categoryId)
         {
-            var foundCategory = await _context.categories.FirstOrDefaultAsync(category => category.CategoryId == categoryId);
+            var foundCategory = await _context.categories.FindAsync(categoryId);
 
             if (foundCategory == null)
             {

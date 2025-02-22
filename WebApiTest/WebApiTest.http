@@ -20,7 +20,7 @@ POST {{WebApiTest_HostAddress}}/api/categories
 Content-Type: application/json
 
 {  
-        "name" : "Apple",
+        "name" : "G",
         "description" : "Any kind of phone"
 }
 

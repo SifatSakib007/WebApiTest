@@ -18,14 +18,15 @@ namespace WebApiTest.Controllers
             _categoryService = categoryService;
         }
 
+        //Get: /api/categories?pageNumber=2&&pageSize=5 => Read categories
         [HttpGet]
-        public async Task<IActionResult> GetCategories()
+        public async Task<IActionResult> GetCategories([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 6)
         {
-            var categoryList = await _categoryService.GetAllCategories();
-            if (categoryList.Count != 0)
-                return Ok(ApiResponse<List<GetCategoriesDTO>>.SuccessResponse(categoryList!.Cast<GetCategoriesDTO>().ToList(), 200, "categories returned successfully."));
+            var categoryList = await _categoryService.GetAllCategories(pageNumber, pageSize);
+            if (categoryList.Items.Any())
+                return Ok(ApiResponse<PaginatedResult<GetCategoriesDTO>>.SuccessResponse(categoryList, 200, "categories returned successfully."));
             else
-                return Ok(ApiResponse<List<GetCategoriesDTO>>.SuccessResponse(categoryList!.Cast<GetCategoriesDTO>().ToList(), 200, "categories empty."));
+                return Ok(ApiResponse<PaginatedResult<GetCategoriesDTO>>.SuccessResponse(categoryList, 200, "categories empty."));
         }
 
         //Post: /api/categories
