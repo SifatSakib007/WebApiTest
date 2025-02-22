@@ -6,9 +6,9 @@ namespace WebApiTest.Interfaces
 {
     public interface ICategoryService
     {
-        List<GetCategoriesDTO> GetAllCategories();
-        GetCategoriesDTO? CreateCategories(CategoryCreateDTO categoryData);
-        GetCategoriesDTO UpdateCategories(Guid categoryId, [FromBody] Category categoryData);
-        bool DeleteCategories(Guid categoryId);
+        Task<List<GetCategoriesDTO?>> GetAllCategories();
+        Task<GetCategoriesDTO?> CreateCategories(CategoryCreateDTO categoryData);
+        Task<GetCategoriesDTO> UpdateCategories(Guid categoryId, [FromBody] Category categoryData);
+        Task<bool> DeleteCategories(Guid categoryId);
     }
 }

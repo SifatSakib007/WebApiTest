@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using WebApiTest.Data;
 using WebApiTest.DTOs;
 using WebApiTest.Interfaces;
 using WebApiTest.Models;
@@ -8,63 +10,64 @@ namespace WebApiTest.Services
 {
     public class CategoryService : ICategoryService
     {
-        private static readonly List<Category> categories = new List<Category>();
+        //private static readonly List<Category> categories = new List<Category>();
+        private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
 
-        public CategoryService(IMapper mapper)
+        public CategoryService(IMapper mapper, ApplicationDbContext context)
         {
             _mapper = mapper;
+            _context = context;
         }
 
         //Get all categories
-        public List<GetCategoriesDTO> GetAllCategories()
+        public async Task<List<GetCategoriesDTO>?> GetAllCategories()
         {
+            var categories = await _context.categories.ToListAsync();
             return _mapper.Map<List<GetCategoriesDTO>>(categories);
-
         }
 
         //Create categrories
-        public GetCategoriesDTO? CreateCategories(CategoryCreateDTO categoryData)
+        public async Task<GetCategoriesDTO?> CreateCategories(CategoryCreateDTO categoryData)
         {
             var newCategory = _mapper.Map<Category>(categoryData);
             newCategory.CategoryId = Guid.NewGuid();
             newCategory.Description = categoryData.Description;
 
-            categories.Add(newCategory);
+            await _context.categories.AddAsync(newCategory);
+            await _context.SaveChangesAsync();
     
             return _mapper.Map<GetCategoriesDTO>(newCategory);
 
         }
 
         // Update categories
-        public GetCategoriesDTO? UpdateCategories(Guid categoryId, [FromBody] Category categoryData)
+        public async Task<GetCategoriesDTO?> UpdateCategories(Guid categoryId, [FromBody] Category categoryData)
         {
-            var foundCategory = categories.FirstOrDefault(category => category.CategoryId == categoryId);
-
+            var foundCategory = await _context.categories.FirstOrDefaultAsync(category => category.CategoryId == categoryId);
             if (foundCategory == null)
             {
                 return null;
             }
 
             _mapper.Map(categoryData, foundCategory);
-            //foundCategory.Name = categoryData.Name;
-            //foundCategory.Description = categoryData.Description;
+            _context.categories.Update(foundCategory);
+            await _context.SaveChangesAsync();
 
             return _mapper.Map<GetCategoriesDTO>(foundCategory);
-
-
         }
 
         // Delete categories
-        public bool DeleteCategories(Guid categoryId)
+        public async Task<bool> DeleteCategories(Guid categoryId)
         {
-            var foundCategory = categories.FirstOrDefault(category => category.CategoryId == categoryId);
+            var foundCategory = await _context.categories.FirstOrDefaultAsync(category => category.CategoryId == categoryId);
 
             if (foundCategory == null)
             {
                 return false;
             }
-            categories.Remove(foundCategory);
+            _context.categories.Remove(foundCategory);
+            await _context.SaveChangesAsync();
             return true;
         }
 

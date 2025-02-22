@@ -26,7 +26,7 @@ Content-Type: application/json
 
 ###
 
-PUT {{WebApiTest_HostAddress}}/api/categories/7292013b-7a53-4b7b-b248-d2ebfd40aaa9
+PUT {{WebApiTest_HostAddress}}/api/categories/232182eb-ddef-47e7-b258-5f8f5b5fd7fe
 Content-type: application/json
 
 {
@@ -37,9 +37,5 @@ Content-type: application/json
 
 ###
 
-DELETE {{WebApiTest_HostAddress}}/api/categories/28b9acff-22b2-4ee3-8615-b3e710a1ce3c
+DELETE {{WebApiTest_HostAddress}}/api/categories/232182eb-ddef-47e7-b258-5f8f5b5fd7fe
 Content-type: application/json
-
-{
-  "categoryId": "alpha"
-}

@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Reflection.Metadata.Ecma335;
 using WebApiTest.Controllers;
+using WebApiTest.Data;
 using WebApiTest.Interfaces;
 using WebApiTest.Models;
 using WebApiTest.Services;
@@ -10,6 +12,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnnection")));
+
 
 //Add services to the controller
 builder.Services.AddControllers();
