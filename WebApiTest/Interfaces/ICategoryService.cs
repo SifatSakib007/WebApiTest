@@ -7,7 +7,7 @@ namespace WebApiTest.Interfaces
 {
     public interface ICategoryService
     {
-        Task<PaginatedResult<GetCategoriesDTO?>> GetAllCategories(int pageNumber, int pageSize);
+        Task<PaginatedResult<GetCategoriesDTO?>> GetAllCategories(int pageNumber, int pageSize, string? search = null);
         Task<GetCategoriesDTO?> CreateCategories(CategoryCreateDTO categoryData);
         Task<GetCategoriesDTO> UpdateCategories(Guid categoryId, [FromBody] Category categoryData);
         Task<bool> DeleteCategories(Guid categoryId);

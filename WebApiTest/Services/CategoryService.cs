@@ -22,9 +22,18 @@ namespace WebApiTest.Services
         }
 
         //Get all categories
-        public async Task<PaginatedResult<GetCategoriesDTO?>> GetAllCategories(int pageNumber, int pageSize)
+        public async Task<PaginatedResult<GetCategoriesDTO?>> GetAllCategories(int pageNumber, int pageSize, string? search = null)
         {
             IQueryable<Category> query = _context.categories;
+
+            //search by name or description
+            if (!string.IsNullOrWhiteSpace(search?.ToLower()))
+            {
+                var formattedSearch = $"%{search.Trim()}%";
+                //query = query.Where(c => c.Name.ToLower().Contains(search) || c.Description.ToLower().Contains(search));
+                query = query.Where(c => EF.Functions.Like(c.Name, formattedSearch) || EF.Functions.Like(c.Description, formattedSearch));
+            }
+
             //get total count
             var totalCount = await query.CountAsync();
 
@@ -32,7 +41,7 @@ namespace WebApiTest.Services
             //20 categories
             //Skip((pageNumber-1)*pageSize).Take(pageSize)
             var items = await query.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
-            
+
             var results = _mapper.Map<List<GetCategoriesDTO?>>(items);
 
             return new PaginatedResult<GetCategoriesDTO?>

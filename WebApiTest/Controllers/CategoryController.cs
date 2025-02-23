@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using System.Buffers;
 using WebApiTest.DTOs;
 using WebApiTest.Interfaces;
@@ -20,9 +21,10 @@ namespace WebApiTest.Controllers
 
         //Get: /api/categories?pageNumber=2&&pageSize=5 => Read categories
         [HttpGet]
-        public async Task<IActionResult> GetCategories([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 6)
+        public async Task<IActionResult> GetCategories([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 6, [FromQuery] string? search=null)
         {
-            var categoryList = await _categoryService.GetAllCategories(pageNumber, pageSize);
+            var categoryList = await _categoryService.GetAllCategories(pageNumber, pageSize, search);
+
             if (categoryList.Items.Any())
                 return Ok(ApiResponse<PaginatedResult<GetCategoriesDTO>>.SuccessResponse(categoryList, 200, "categories returned successfully."));
             else
