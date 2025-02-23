@@ -22,7 +22,8 @@ namespace WebApiTest.Services
         }
 
         //Get all categories
-        public async Task<PaginatedResult<GetCategoriesDTO?>> GetAllCategories(int pageNumber, int pageSize, string? search = null)
+        public async Task<PaginatedResult<GetCategoriesDTO?>> GetAllCategories(int pageNumber, 
+                            int pageSize, string? search = null, string? sortOrder = null)
         {
             IQueryable<Category> query = _context.categories;
 
@@ -32,6 +33,33 @@ namespace WebApiTest.Services
                 var formattedSearch = $"%{search.Trim()}%";
                 //query = query.Where(c => c.Name.ToLower().Contains(search) || c.Description.ToLower().Contains(search));
                 query = query.Where(c => EF.Functions.Like(c.Name, formattedSearch) || EF.Functions.Like(c.Description, formattedSearch));
+            }
+
+            if (string.IsNullOrWhiteSpace(sortOrder))
+            {
+                query = query.OrderBy(c => c.Name);
+            }
+            else if (!string.IsNullOrWhiteSpace(sortOrder))
+            {
+                var formattedOrder = sortOrder.Trim();
+                switch (formattedOrder.ToLower())
+                {
+                    case "name_asc":
+                        query = query.OrderBy(c => c.Name);
+                        break;
+                    case "name_desc":
+                        query = query.OrderByDescending(c => c.Name);
+                        break;
+                    case "createdAt_asc":
+                        query = query.OrderBy(c => c.CreatedAt);
+                        break;
+                    case "created_desc":
+                        query = query.OrderByDescending(c => c.CreatedAt);
+                        break;
+                    default:
+                        query = query.OrderBy(c => c.Name);
+                        break;
+                }
             }
 
             //get total count

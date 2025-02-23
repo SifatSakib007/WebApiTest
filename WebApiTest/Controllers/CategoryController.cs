@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.IdentityModel.Tokens;
 using System.Buffers;
 using WebApiTest.DTOs;
@@ -21,9 +22,10 @@ namespace WebApiTest.Controllers
 
         //Get: /api/categories?pageNumber=2&&pageSize=5 => Read categories
         [HttpGet]
-        public async Task<IActionResult> GetCategories([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 6, [FromQuery] string? search=null)
+        public async Task<IActionResult> GetCategories([FromQuery] int pageNumber = 1, 
+            [FromQuery] int pageSize = 6, [FromQuery] string? search=null, [FromQuery] string? sortOrder=null)
         {
-            var categoryList = await _categoryService.GetAllCategories(pageNumber, pageSize, search);
+            var categoryList = await _categoryService.GetAllCategories(pageNumber, pageSize, search, sortOrder);
 
             if (categoryList.Items.Any())
                 return Ok(ApiResponse<PaginatedResult<GetCategoriesDTO>>.SuccessResponse(categoryList, 200, "categories returned successfully."));
